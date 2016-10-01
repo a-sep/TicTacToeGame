@@ -64,6 +64,7 @@ function init() {
     choosePlayer();
 } // ----- end of init()
 
+
 function choosePlayer() {
     initCanvas.addEventListener('click', function(e) {
         let pos = getMousePos(initCanvas, e);
@@ -79,6 +80,15 @@ function choosePlayer() {
         }
         // console.log('currentPlayer', currentPlayer);
     });
+}
+
+// wont to play with human or computer(default)
+function chooseOpponent(){
+
+  if (currentPlayer) {
+      document.getElementById("initCanvas").style.display = 'none'; // jshint ignore:line
+      drawBoard();
+  }
 }
 
 function drawBoard() {
@@ -143,39 +153,196 @@ function drawData() {
 
 function playGame() {
     canvas.addEventListener('click', function(e) {
+        humanTurn = false;
         let pos = getMousePos(canvas, e);
         if (data[pos.row][pos.col] === 0) {
             data[pos.row][pos.col] = currentPlayer;
             moveCounter++;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBoard();
-            testResult();
+            testResult(); // test result with currentPlayer and then change a player
+            togglePlayer(); // w tej funkcji odpalic kompa lub drugiego gracza
+            console.log('moveCounter human', moveCounter);
         }
     });
-    // console.log('data ' + data); // jshint ignore:line
 }
 
 function testResult() {
-    let status; // draw, win, loose
-
     if ((data[0][0] === currentPlayer && data[0][1] === currentPlayer && data[0][2] === currentPlayer) || (data[1][0] === currentPlayer && data[1][1] === currentPlayer && data[1][2] === currentPlayer) || (data[2][0] === currentPlayer && data[2][1] === currentPlayer && data[2][2] === currentPlayer) || (data[0][0] === currentPlayer && data[1][0] === currentPlayer && data[2][0] === currentPlayer) || (data[0][1] === currentPlayer && data[1][1] === currentPlayer && data[2][1] === currentPlayer) || (data[0][2] === currentPlayer && data[1][2] === currentPlayer && data[2][2] === currentPlayer) || (data[0][0] === currentPlayer && data[1][1] === currentPlayer && data[2][2] === currentPlayer) || (data[0][2] === currentPlayer && data[1][1] === currentPlayer && data[2][0] === currentPlayer)) {
-        status = ' win';
-        console.log(currentPlayer, status);
+        console.log(currentPlayer, ' is a winner');
+
+        //TODO jestes zwyciezca canvas i reset gry po kliknieciu
+
         setTimeout(function() {
             location.reload(); // jshint ignore:line
-        }, 1000);
+        }, 2000);
+    } else if (moveCounter === 9) {
+        // jesli nie ma juz zer w data to remis
+        console.log(moveCounter, 'brak miejsc - koniec gry REMIS'); // jshint ignore:line
+
+        setTimeout(function() {
+            location.reload(); // jshint ignore:line
+        }, 2000);
     }
-    // jesli nie ma juz zer w data to remis
-    if (moveCounter === 9) {
-        status = 'draw';
-        console.log('brak miejsc - koniec gry', status); // jshint ignore:line
-    }
-    togglePlayer();
 }
+//***************---------------------zmiana gracza------------------------------------***********************
+let humanTurn = false;
+let twoPlayers = false;
+// let twoPlayers = true;
 
 function togglePlayer() {
     currentPlayer === 1
         ? currentPlayer = 2
         : currentPlayer = 1; // jshint ignore:line
+
+    if (!twoPlayers && !humanTurn) {
+        computersTurn();
+        testResult();
+        togglePlayer();
+    }
 }
+
+function computersTurn() {
+    humanTurn = true;
+    let dataTest = data;
+    let stop = false;
+    // testuj mozliwosc swojej wygranej na wszystkich polach
+    for (let i = 0; i < dataTest.length; i++) {
+        for (let j = 0; j < dataTest.length; j++) {
+
+            if (dataTest[i][j] === 0) {
+                testMove(i, j);
+                if (stop) {
+                    break;
+                }
+            }
+        }
+        if (stop) {
+            break;
+        }
+    }
+    // testuj mozliwosc wygranej przeciwnika (human) na wszystkich polach
+    for (let i = 0; i < dataTest.length; i++) {
+        for (let j = 0; j < dataTest.length; j++) {
+
+            if (dataTest[i][j] === 0) {
+                testContraMove(i, j);
+                if (stop) {
+                    break;
+                }
+            }
+        }
+        if (stop) {
+            break;
+        }
+    }
+    // obstaw srodek jesli wolny
+    if (!stop && data[1][1] === 0) {
+        data[1][1] = currentPlayer;
+        moveCounter++;
+        stop = true;
+    }
+
+    //jesli computer ma juz srodek a w pionie lub poziomie jest wolne to obstaw
+
+    if (!stop && data[1][1] === currentPlayer) {
+        if (data[0][1] === 0 && data[2][1] === 0) {
+            data[0][1] = currentPlayer;
+            moveCounter++;
+            stop = true;
+        } else if (data[1][0] === 0 && data[1][2] === 0) {
+            data[1][0] = currentPlayer;
+            moveCounter++;
+            stop = true;
+        }
+
+    }
+
+    if (!stop) {
+        // wez random zero z naroznika i podmien
+        for (let i = 0; i < data.length; i++) {
+            for (let j = 0; j < data.length; j++) {
+                if (data[i][j] === 0 && i != 1 && j != 1 && !stop) {
+                    data[i][j] = currentPlayer;
+                    moveCounter++;
+                    stop = true;
+                    break;
+                    console.log('wstaw do roga');
+                }
+                if (stop) {
+                    break;
+                }
+            }
+        }
+
+    }
+
+    if (!stop) {
+        let count = 0;
+        do {
+            count++;
+            console.log('do - while');
+            let row = getRandomIntInclusive(0, 2);
+            let col = getRandomIntInclusive(0, 2);
+            if (data[row][col] === 0) {
+                data[row][col] = currentPlayer;
+                moveCounter++;
+                console.log('coordinate ', row, col);
+                console.log('moveCounter random', moveCounter);
+                stop = true;
+                break;
+            }
+        } while (count < 500 || stop);
+    }
+
+    function testMove(a, b) {
+        //TODO najpierw sprawdz swoja wygrana na wszystkich polach a potem kontragracza na wszystkich polach
+        dataTest[a][b] = currentPlayer;
+        if ((dataTest[0][0] === currentPlayer && dataTest[0][1] === currentPlayer && dataTest[0][2] === currentPlayer) || (dataTest[1][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[1][2] === currentPlayer) || (dataTest[2][0] === currentPlayer && dataTest[2][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][0] === currentPlayer && dataTest[2][0] === currentPlayer) || (dataTest[0][1] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][1] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][2] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][0] === currentPlayer)) {
+            data[a][b] = currentPlayer;
+            moveCounter++;
+            stop = true;
+            console.log('spokojnie wygra comp ...');
+        } else {
+            dataTest[a][b] = 0;
+        }
+        console.log('spokojnie test move');
+    }
+    function testContraMove(a, b) {
+        //TODO najpierw sprawdz swoja wygrana na wszystkich polach a potem kontragracza na wszystkich polach
+        togglePlayer();
+        dataTest[a][b] = currentPlayer;
+        if ((dataTest[0][0] === currentPlayer && dataTest[0][1] === currentPlayer && dataTest[0][2] === currentPlayer) || (dataTest[1][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[1][2] === currentPlayer) || (dataTest[2][0] === currentPlayer && dataTest[2][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][0] === currentPlayer && dataTest[2][0] === currentPlayer) || (dataTest[0][1] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][1] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][2] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][0] === currentPlayer)) {
+            togglePlayer();
+            data[a][b] = currentPlayer;
+            moveCounter++;
+            stop = true;
+            console.log('spokojnie CONTRA compa ...');
+        } else {
+            togglePlayer();
+            dataTest[a][b] = 0;
+        }
+        console.log('spokojnie test move');
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBoard();
+
+    console.log(moveCounter, 'test ', dataTest);
+}
+
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+//***********************************************************************************************************************
+// TODO dodac wybor gry z czlowiekiem lub komputerem , ustawic jakis checkin na twoPlayers = true;
+// TODO
+
+// function togglePlayer() {
+//     currentPlayer === 1
+//         ? currentPlayer = 2
+//         : currentPlayer = 1; // jshint ignore:line
+// }
