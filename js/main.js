@@ -9,8 +9,9 @@ let ctx = canvas.getContext("2d");
 let cellSize = 100;
 let currentPlayer = 0; // 0=none , 1=circle, 2=cross
 let moveCounter = 0;
+let twoPlayers = false;
 
-// data for board
+// start data for board
 let data = [
     [
         0, 0, 0
@@ -41,16 +42,30 @@ function init() {
     initCtx.fillStyle = gradient;
     initCtx.fillRect(0, 0, initCanvas.width, initCanvas.height);
     // info for player
-    initCtx.font = "bold 28px Lato";
+    initCtx.font = "bold 30px Lato";
     initCtx.fillStyle = "#000000";
     initCtx.textLetterSpacing = 3;
-    initCtx.fillText("Choose Your Team", initCanvas.width / 7, initCanvas.height / 3.5);
+    initCtx.fillText("Choose Your Team", initCanvas.width / 8, initCanvas.height / 3.5);
+
     // circle
+    let x = 0.5 * cellSize;
+    let y = 1.5 * cellSize;
+    let radius = cellSize * 0.35;
+    let gradientCircle = initCtx.createRadialGradient(x + 10, y - 10, 3, x, y, radius);
+    gradientCircle.addColorStop(0, "#fffff0");
+    gradientCircle.addColorStop(0.99, '#a81010');
+    gradientCircle.addColorStop(1, '#252525');
+    initCtx.fillStyle = gradientCircle;
     initCtx.beginPath();
-    initCtx.arc(0.5 * cellSize, 1.5 * cellSize, cellSize * 0.35, 0, Math.PI * 2, false);
-    initCtx.fillStyle = "#a81010";
+    initCtx.arc(x, y, radius, 0, Math.PI * 2, false);
     initCtx.fill();
+
     // cross
+    let gradientCross = initCtx.createLinearGradient(2.8 * cellSize, 1.2 * cellSize, 2.2 * cellSize, 1.8 * cellSize);
+    gradientCross.addColorStop(0.4, "#0018bb");
+    gradientCross.addColorStop(0.5, "#fffff0");
+    gradientCross.addColorStop(0.6, "#0018bb");
+    initCtx.strokeStyle = gradientCross;
     initCtx.beginPath();
     initCtx.moveTo(2.2 * cellSize, 1.2 * cellSize);
     initCtx.lineTo(2.8 * cellSize, 1.8 * cellSize);
@@ -58,42 +73,59 @@ function init() {
     initCtx.lineTo(2.8 * cellSize, 1.2 * cellSize);
     initCtx.lineWidth = 10;
     initCtx.lineCap = 'round';
-    initCtx.strokeStyle = "#0018bb";
     initCtx.stroke();
     // choose your player with click
     choosePlayer();
 } // ----- end of init()
 
-
 function choosePlayer() {
     initCanvas.addEventListener('click', function(e) {
         let pos = getMousePos(initCanvas, e);
-        // console.log(pos.row, pos.col); // jshint ignore:line
         if (pos.row === 1 && pos.col === 0) {
             currentPlayer = 1; // player is a circle
         } else if (pos.row === 1 && pos.col === 2) {
             currentPlayer = 2; //player is a cross
         }
         if (currentPlayer) {
-            document.getElementById("initCanvas").style.display = 'none'; // jshint ignore:line
-            drawBoard();
+            chooseOpponent();
         }
-        // console.log('currentPlayer', currentPlayer);
     });
 }
 
 // wont to play with human or computer(default)
-function chooseOpponent(){
+function chooseOpponent() {
+    let gradient = initCtx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, "#98ebfe");
+    gradient.addColorStop(1, "#b6fa79");
+    initCtx.fillStyle = gradient;
+    initCtx.fillRect(0, 0, initCanvas.width, initCanvas.height);
+    // info for player
+    initCtx.font = "bold 28px Lato";
+    initCtx.fillStyle = "#000000";
+    initCtx.textLetterSpacing = 3;
+    initCtx.fillText("TWO Players", initCanvas.width / 4, initCanvas.height / 4);
+    initCtx.fillText("or", initCanvas.width / 2.1, initCanvas.height / 2);
+    initCtx.fillText("ONE Player", initCanvas.width / 4, initCanvas.height / 1.3);
 
-  if (currentPlayer) {
-      document.getElementById("initCanvas").style.display = 'none'; // jshint ignore:line
-      drawBoard();
-  }
+    initCanvas.addEventListener('click', function(e) {
+        let pos = getMousePos(initCanvas, e);
+        let click = false;
+        if (pos.row === 1) {
+            twoPlayers = false; // player vs player
+            click = true;
+        } else if (pos.row === 0) {
+            click = true;
+            twoPlayers = true; // player vs player
+        }
+        if (currentPlayer && click) {
+            document.getElementById("initCanvas").style.display = 'none'; // jshint ignore:line
+            drawBoard();
+        }
+    });
 }
 
 function drawBoard() {
     document.getElementById("mainCanvas").style.display = 'inline'; // jshint ignore:line
-
     // background
     let gradient = ctx.createLinearGradient(0, 0, 0, 300);
     gradient.addColorStop(0, "#98ebfe");
@@ -127,14 +159,26 @@ function drawData() {
 
             switch (value) {
                 case 1:
-                    // draw a circle
+                    //draw a circle
+                    let x = (j + 0.5) * cellSize;
+                    let y = (i + 0.5) * cellSize;
+                    let radius = cellSize * 0.35;
+                    let gradientCircle = ctx.createRadialGradient(x + 10, y - 10, 3, x, y, radius);
+                    gradientCircle.addColorStop(0, "#fffff0");
+                    gradientCircle.addColorStop(0.99, '#a81010');
+                    gradientCircle.addColorStop(1, '#252525');
+                    ctx.fillStyle = gradientCircle;
                     ctx.beginPath();
-                    ctx.arc((j + 0.5) * cellSize, (i + 0.5) * cellSize, cellSize * 0.35, 0, Math.PI * 2, false);
-                    ctx.fillStyle = "#a81010";
+                    ctx.arc(x, y, radius, 0, Math.PI * 2, false);
                     ctx.fill();
                     break;
                 case 2:
                     // draw a cross
+                    let gradientCross = ctx.createLinearGradient((j + 0.8) * cellSize, (i + 0.2) * cellSize, (j + 0.2) * cellSize, (i + 0.8) * cellSize);
+                    gradientCross.addColorStop(0.4, "#0018bb");
+                    gradientCross.addColorStop(0.5, "#fffff0");
+                    gradientCross.addColorStop(0.6, "#0018bb");
+                    ctx.strokeStyle = gradientCross;
                     ctx.beginPath();
                     ctx.moveTo((j + 0.2) * cellSize, (i + 0.2) * cellSize);
                     ctx.lineTo((j + 0.8) * cellSize, (i + 0.8) * cellSize);
@@ -142,7 +186,6 @@ function drawData() {
                     ctx.lineTo((j + 0.8) * cellSize, (i + 0.2) * cellSize);
                     ctx.lineWidth = 10;
                     ctx.lineCap = 'round';
-                    ctx.strokeStyle = "#0018bb";
                     ctx.stroke();
                     break;
             }
@@ -160,35 +203,75 @@ function playGame() {
             moveCounter++;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBoard();
-            testResult(); // test result with currentPlayer and then change a player
-            togglePlayer(); // w tej funkcji odpalic kompa lub drugiego gracza
-            console.log('moveCounter human', moveCounter);
+            testResult(); // test result with currentPlayer
+            togglePlayer(); // change player
         }
     });
 }
 
 function testResult() {
     if ((data[0][0] === currentPlayer && data[0][1] === currentPlayer && data[0][2] === currentPlayer) || (data[1][0] === currentPlayer && data[1][1] === currentPlayer && data[1][2] === currentPlayer) || (data[2][0] === currentPlayer && data[2][1] === currentPlayer && data[2][2] === currentPlayer) || (data[0][0] === currentPlayer && data[1][0] === currentPlayer && data[2][0] === currentPlayer) || (data[0][1] === currentPlayer && data[1][1] === currentPlayer && data[2][1] === currentPlayer) || (data[0][2] === currentPlayer && data[1][2] === currentPlayer && data[2][2] === currentPlayer) || (data[0][0] === currentPlayer && data[1][1] === currentPlayer && data[2][2] === currentPlayer) || (data[0][2] === currentPlayer && data[1][1] === currentPlayer && data[2][0] === currentPlayer)) {
-        console.log(currentPlayer, ' is a winner');
-
-        //TODO jestes zwyciezca canvas i reset gry po kliknieciu
-
+        finalScore(currentPlayer);
         setTimeout(function() {
             location.reload(); // jshint ignore:line
         }, 2000);
     } else if (moveCounter === 9) {
-        // jesli nie ma juz zer w data to remis
-        console.log(moveCounter, 'brak miejsc - koniec gry REMIS'); // jshint ignore:line
-
+        finalScore();
         setTimeout(function() {
             location.reload(); // jshint ignore:line
         }, 2000);
     }
 }
-//***************---------------------zmiana gracza------------------------------------***********************
+
+function finalScore(player) {
+    // clear canvas and show background
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, "#98ebfe");
+    gradient.addColorStop(1, "#b6fa79");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = "bold 36px Lato";
+    ctx.fillStyle = "#000000";
+    ctx.textLetterSpacing = 3;
+    if (player === 1) {
+        ctx.fillText("The winner is", initCanvas.width / 8, initCanvas.height / 3.5);
+        // circle
+        let x = 1.5 * cellSize;
+        let y = 1.5 * cellSize;
+        let radius = cellSize * 0.35;
+        let gradientCircle = ctx.createRadialGradient(x + 10, y - 10, 3, x, y, radius);
+        gradientCircle.addColorStop(0, "#fffff0");
+        gradientCircle.addColorStop(0.99, '#a81010');
+        gradientCircle.addColorStop(1, '#252525');
+        ctx.fillStyle = gradientCircle;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+        ctx.fill();
+    } else if (player === 2) {
+        ctx.fillText("The winner is", initCanvas.width / 8, initCanvas.height / 3.5);
+        // cross
+        let gradientCross = ctx.createLinearGradient(1.8 * cellSize, 1.2 * cellSize, 1.2 * cellSize, 1.8 * cellSize);
+        gradientCross.addColorStop(0.4, "#0018bb");
+        gradientCross.addColorStop(0.5, "#fffff0");
+        gradientCross.addColorStop(0.6, "#0018bb");
+        ctx.strokeStyle = gradientCross;
+        ctx.beginPath();
+        ctx.moveTo(1.2 * cellSize, 1.2 * cellSize);
+        ctx.lineTo(1.8 * cellSize, 1.8 * cellSize);
+        ctx.moveTo(1.2 * cellSize, 1.8 * cellSize);
+        ctx.lineTo(1.8 * cellSize, 1.2 * cellSize);
+        ctx.lineWidth = 10;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+    } else {
+        ctx.fillText("DRAW", initCanvas.width / 3, initCanvas.height / 2);
+    }
+
+}
+//***************--------------------- changing a player ------------------------------------***********************
 let humanTurn = false;
-let twoPlayers = false;
-// let twoPlayers = true;
 
 function togglePlayer() {
     currentPlayer === 1
@@ -206,7 +289,7 @@ function computersTurn() {
     humanTurn = true;
     let dataTest = data;
     let stop = false;
-    // testuj mozliwosc swojej wygranej na wszystkich polach
+    // check - can computer win?
     for (let i = 0; i < dataTest.length; i++) {
         for (let j = 0; j < dataTest.length; j++) {
 
@@ -221,7 +304,7 @@ function computersTurn() {
             break;
         }
     }
-    // testuj mozliwosc wygranej przeciwnika (human) na wszystkich polach
+    // check - can human win?
     for (let i = 0; i < dataTest.length; i++) {
         for (let j = 0; j < dataTest.length; j++) {
 
@@ -236,15 +319,13 @@ function computersTurn() {
             break;
         }
     }
-    // obstaw srodek jesli wolny
+    // if middle is free take it!
     if (!stop && data[1][1] === 0) {
         data[1][1] = currentPlayer;
         moveCounter++;
         stop = true;
     }
-
     //jesli computer ma juz srodek a w pionie lub poziomie jest wolne to obstaw
-
     if (!stop && data[1][1] === currentPlayer) {
         if (data[0][1] === 0 && data[2][1] === 0) {
             data[0][1] = currentPlayer;
@@ -259,7 +340,7 @@ function computersTurn() {
     }
 
     if (!stop) {
-        // wez random zero z naroznika i podmien
+        // teake a corner
         for (let i = 0; i < data.length; i++) {
             for (let j = 0; j < data.length; j++) {
                 if (data[i][j] === 0 && i != 1 && j != 1 && !stop) {
@@ -296,20 +377,17 @@ function computersTurn() {
     }
 
     function testMove(a, b) {
-        //TODO najpierw sprawdz swoja wygrana na wszystkich polach a potem kontragracza na wszystkich polach
         dataTest[a][b] = currentPlayer;
         if ((dataTest[0][0] === currentPlayer && dataTest[0][1] === currentPlayer && dataTest[0][2] === currentPlayer) || (dataTest[1][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[1][2] === currentPlayer) || (dataTest[2][0] === currentPlayer && dataTest[2][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][0] === currentPlayer && dataTest[2][0] === currentPlayer) || (dataTest[0][1] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][1] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][2] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][0] === currentPlayer)) {
             data[a][b] = currentPlayer;
             moveCounter++;
             stop = true;
-            console.log('spokojnie wygra comp ...');
         } else {
             dataTest[a][b] = 0;
         }
-        console.log('spokojnie test move');
     }
+
     function testContraMove(a, b) {
-        //TODO najpierw sprawdz swoja wygrana na wszystkich polach a potem kontragracza na wszystkich polach
         togglePlayer();
         dataTest[a][b] = currentPlayer;
         if ((dataTest[0][0] === currentPlayer && dataTest[0][1] === currentPlayer && dataTest[0][2] === currentPlayer) || (dataTest[1][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[1][2] === currentPlayer) || (dataTest[2][0] === currentPlayer && dataTest[2][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][0] === currentPlayer && dataTest[2][0] === currentPlayer) || (dataTest[0][1] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][1] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][2] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][0] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][2] === currentPlayer) || (dataTest[0][2] === currentPlayer && dataTest[1][1] === currentPlayer && dataTest[2][0] === currentPlayer)) {
@@ -317,18 +395,14 @@ function computersTurn() {
             data[a][b] = currentPlayer;
             moveCounter++;
             stop = true;
-            console.log('spokojnie CONTRA compa ...');
         } else {
             togglePlayer();
             dataTest[a][b] = 0;
         }
-        console.log('spokojnie test move');
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBoard();
-
-    console.log(moveCounter, 'test ', dataTest);
 }
 
 function getRandomIntInclusive(min, max) {
@@ -336,13 +410,3 @@ function getRandomIntInclusive(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-//***********************************************************************************************************************
-// TODO dodac wybor gry z czlowiekiem lub komputerem , ustawic jakis checkin na twoPlayers = true;
-// TODO
-
-// function togglePlayer() {
-//     currentPlayer === 1
-//         ? currentPlayer = 2
-//         : currentPlayer = 1; // jshint ignore:line
-// }
