@@ -10,6 +10,6 @@ This is repository for FreeCodeCamp [challenge.](https://www.freecodecamp.com/ch
 
 - My game will reset as soon as it's over so I can play again.<br>
 
-- I can choose whether I want to play as X or O.<br>
+- I can choose to play as X or O.<br>
 
 Status: *Ready.

@@ -1,5 +1,5 @@
 /*jshint esversion: 6 */
-// ========= ver. 1.0  ===========
+// ========= ver. 2.0  ===========
 // jshint ignore:line
 "use strict";
 let initCanvas = document.getElementById("initCanvas"); // jshint ignore:line
