@@ -191,7 +191,7 @@ function drawData() {
             }
         }
     }
-    playGame();
+        playGame();
 }
 
 function playGame() {
@@ -212,12 +212,12 @@ function playGame() {
 function testResult() {
     if ((data[0][0] === currentPlayer && data[0][1] === currentPlayer && data[0][2] === currentPlayer) || (data[1][0] === currentPlayer && data[1][1] === currentPlayer && data[1][2] === currentPlayer) || (data[2][0] === currentPlayer && data[2][1] === currentPlayer && data[2][2] === currentPlayer) || (data[0][0] === currentPlayer && data[1][0] === currentPlayer && data[2][0] === currentPlayer) || (data[0][1] === currentPlayer && data[1][1] === currentPlayer && data[2][1] === currentPlayer) || (data[0][2] === currentPlayer && data[1][2] === currentPlayer && data[2][2] === currentPlayer) || (data[0][0] === currentPlayer && data[1][1] === currentPlayer && data[2][2] === currentPlayer) || (data[0][2] === currentPlayer && data[1][1] === currentPlayer && data[2][0] === currentPlayer)) {
         finalScore(currentPlayer);
-        setTimeout(function() {
+        let st = setTimeout(function() {
             location.reload(); // jshint ignore:line
         }, 2000);
     } else if (moveCounter === 9) {
         finalScore();
-        setTimeout(function() {
+        let st = setTimeout(function() {
             location.reload(); // jshint ignore:line
         }, 2000);
     }
@@ -307,7 +307,6 @@ function computersTurn() {
     // check - can human win?
     for (let i = 0; i < dataTest.length; i++) {
         for (let j = 0; j < dataTest.length; j++) {
-
             if (dataTest[i][j] === 0) {
                 testContraMove(i, j);
                 if (stop) {
@@ -400,7 +399,6 @@ function computersTurn() {
             dataTest[a][b] = 0;
         }
     }
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBoard();
 }

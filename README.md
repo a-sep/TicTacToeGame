@@ -2,7 +2,7 @@
 
 This is repository for FreeCodeCamp [challenge.](https://www.freecodecamp.com/challenges/build-a-tic-tac-toe-game)
 
-# Tic Tak Toe Game v1.0
+# Tic Tak Toe Game v2.0
 
 ## User Story:
 
@@ -12,10 +12,4 @@ This is repository for FreeCodeCamp [challenge.](https://www.freecodecamp.com/ch
 
 - I can choose whether I want to play as X or O.<br>
 
-Status: Ver. 1.0 is for 2 players only.
-
-### TODO:
-
-- add posibilyty to play with computer
-- tune up frontend
-- add info about score of the game at the end
+Status: *Ready.
