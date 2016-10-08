@@ -1,5 +1,3 @@
-# TicTakToeGame
-
 This is repository for FreeCodeCamp [challenge.](https://www.freecodecamp.com/challenges/build-a-tic-tac-toe-game)
 
 # Tic Tak Toe Game v2.0
@@ -13,3 +11,4 @@ This is repository for FreeCodeCamp [challenge.](https://www.freecodecamp.com/ch
 - I can choose to play as X or O.<br>
 
 Status: *Ready.
+link https://a-sep.github.io/TicTakToeGame/
