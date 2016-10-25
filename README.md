@@ -1,6 +1,6 @@
 This is repository for FreeCodeCamp [challenge.](https://www.freecodecamp.com/challenges/build-a-tic-tac-toe-game)
 
-# Tic Tak Toe Game v2.0
+# Tic Tac Toe Game v2.0
 
 ## User Story:
 
