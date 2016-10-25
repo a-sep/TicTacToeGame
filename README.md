@@ -11,4 +11,4 @@ This is repository for FreeCodeCamp [challenge.](https://www.freecodecamp.com/ch
 - I can choose to play as X or O.<br>
 
 Status: *Ready.
-link https://a-sep.github.io/TicTakToeGame/
+link https://a-sep.github.io/TicTacToeGame/
